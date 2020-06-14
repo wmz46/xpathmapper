@@ -10,10 +10,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**
- * @Description:日期工具类
- * @Author:钢翼
- * @Email:659240788@qq.com
- * @DateTime Create in 下午 5:09 2020/2/23/023
+ * 日期工具类
+ * @author:wangmianzhe
  **/
 @Slf4j
 public class DateUtil {

@@ -12,10 +12,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 /**
- * @Description: 反射工具类
- * @Author:钢翼
- * @Email:659240788@qq.com
- * @DateTime Create in 下午 9:12 2020/6/13/013
+ *  反射工具类
+ * @author:wangmianzhe
  **/
 @Slf4j
 public class ReflectUtil {
@@ -39,15 +37,15 @@ public class ReflectUtil {
     public static <T> Field getField(String fieldName, Class<T> clazz) {
         return getAllFields(clazz).stream().filter(m -> m.getName().equals(fieldName)).findFirst().orElse(null);
     }
+
     /**
      * 设置值
-     *
-     * @param m
-     * @param fieldName
-     * @param value
-     * @param clazz
+     * @param m 对象
+     * @param fieldName 字段名
+     * @param value 值
+     * @param clazz  类型
      */
-    public static <T> void setValue(Object m, String fieldName, Object value, Class<T> clazz) {
+    public static  void setValue(Object m, String fieldName, Object value, Class<?> clazz) {
         if (StringUtil.isEmpty(fieldName)) {
             return;
         }
@@ -72,16 +70,15 @@ public class ReflectUtil {
             return null;
         }
     }
+
     /**
-     * 获取值
-     *
-     * @param m
-     * @param fieldName
-     * @param clazz
-     * @param <T>
-     * @return
+     *  获取值
+     * @param m 对象
+     * @param fieldName 字段名
+     * @param clazz 类型
+     * @return  值
      */
-    public static <T> Object getValue(Object m, String fieldName, Class<T> clazz) {
+    public static Object getValue(Object m, String fieldName, Class<?> clazz) {
         try {
             Field field = getField(fieldName, clazz);
             if (field != null) {

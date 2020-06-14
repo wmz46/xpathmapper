@@ -23,10 +23,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @Description: xml工具类
- * @Author:钢翼
- * @Email:659240788@qq.com
- * @DateTime Create in 下午 9:09 2020/6/13/013
+ *  xml工具类
+ * @author:wangmianzhe
  **/
 @Slf4j
 public class XPathMapper {

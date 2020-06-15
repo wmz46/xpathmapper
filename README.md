@@ -76,7 +76,14 @@ Student student = XPathMapper.parse(xml,Student.class);
 //为避免&符号问题，组件会去除html中的script标签和注释
 Student student = XPathMapper.parseHtml(html,Student.class);
 ```
-### 5.字段支持类型
+### 5.注解说明
+```java
+    //value 表示字段的xpath，嵌套类的字段需使用相对路径./开头，非嵌套类的字段需使用完整路径/开头
+    //CDATA 表示内容是否需要CDATA标签包裹，默认为false
+    //format 日期类型格式化用，无默认值。 如果是LocalDate类型，请注意不要写到时分秒。
+    @XPath(value="/input/body/student/description/text()",CDATA = true,format="yyyy-MM-dd HH:mm:ss")
+```
+### 6.字段支持类型
 目前字段支持类型
 
 1.字符串类型：String

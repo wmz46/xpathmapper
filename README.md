@@ -85,11 +85,11 @@ Student student = XPathMapper.parseHtml(html,Student.class);
 
 3.日期类型：Date,LocalDate,LocalDateTime
 
-4.以上3种类型的数组及列表，如String[],Set<String>,List<String>,HashSet<String>,ArrayList<String>
+4.以上3种类型的数组及列表，如String[],Set\<String>,List\<String>,HashSet\<String>,ArrayList\<String>
 
 5.自定义对象
 
-6.自定义对象的数组及列表,如 YourClass[],Set<YourClass>,List<YourClass>,HashSet<YourClass>,ArrayList<YourClass>
+6.自定义对象的数组及列表,如 YourClass[],Set\<YourClass>,List\<YourClass>,HashSet\<YourClass>,ArrayList\<YourClass>
 
 
 ## 三、开发背景

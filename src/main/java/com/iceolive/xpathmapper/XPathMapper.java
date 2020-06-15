@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * xml工具类
@@ -52,6 +53,7 @@ public class XPathMapper {
             }
             boolean isList = false;
             boolean isArray = false;
+            boolean isSet = false;
             Class<?> type = null;
             Object value = ReflectUtil.newInstance(field, nodes.size());
             if (field.getType().isArray()) {
@@ -59,9 +61,12 @@ public class XPathMapper {
                 type = field.getType().getComponentType();
             } else if (field.getGenericType() instanceof ParameterizedType) {
                 ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
-                if (parameterizedType.getRawType().equals(List.class)) {
+                if (List.class.isAssignableFrom((Class<?>) parameterizedType.getRawType())) {
                     type = (Class) parameterizedType.getActualTypeArguments()[0];
                     isList = true;
+                }else if(Set.class.isAssignableFrom((Class<?>)parameterizedType.getRawType())){
+                    type = (Class) parameterizedType.getActualTypeArguments()[0];
+                    isSet = true;
                 }
             } else {
                 type = field.getType();
@@ -87,6 +92,10 @@ public class XPathMapper {
                         Object obj2 = ReflectUtil.newInstance(type);
                         Array.set(obj1, i, obj2);
                         getValue(document, type, obj2, xPathStr + "[" + (i + 1) + "]");
+                    } else if(isSet){
+                        Object obj2 = ReflectUtil.newInstance(type);
+                        ((Set) obj1).add(obj2);
+                        getValue(document, type, obj2, xPathStr + "[" + (i + 1) + "]");
                     } else if (isList) {
                         Object obj2 = ReflectUtil.newInstance(type);
                         ((List) obj1).add(obj2);
@@ -100,6 +109,8 @@ public class XPathMapper {
                     Object val = getObject(xPath, type, str, typeName);
                     if (isArray) {
                         Array.set(value, i, val);
+                    }else if(isSet){
+                        ((Set)value).add(val);
                     } else if (isList) {
                         ((List) value).add(val);
                     } else {
@@ -223,7 +234,14 @@ public class XPathMapper {
                         Object[] values;
                         if (val == null) {
 
-                        } else if (val instanceof List) {
+                        } else if(val instanceof  Set){
+                            if (((Set) val).isEmpty()) {
+                                return;
+                            }
+                            values = ((Set) val).toArray();
+                            setValue(document, element, values, node, xPath);
+                        }
+                        else if (val instanceof List) {
                             if (((List) val).isEmpty()) {
                                 return;
                             }

@@ -119,6 +119,8 @@ public class ReflectUtil {
                     return (T) new ArrayList();
                 } else if (Map.class.isAssignableFrom(clazz)) {
                     return (T) new HashMap();
+                }else if(Set.class.isAssignableFrom(clazz)){
+                    return (T) new HashSet<>();
                 } else {
                     throw new RuntimeException("不支持类型");
                 }

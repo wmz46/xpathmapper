@@ -72,8 +72,10 @@ XPathMapper.format(student, true);//第二个参数表示是否去除xml报文�
 Student student = XPathMapper.parse(xml,Student.class);
 ```
 ### 4.网页内容反序列化
+```java
 //为避免&符号问题，组件会去除html中的script标签和注释
 Student student = XPathMapper.parseHtml(html,Student.class);
+```
 ### 5.字段支持类型
 目前字段支持类型
 
@@ -83,11 +85,11 @@ Student student = XPathMapper.parseHtml(html,Student.class);
 
 3.日期类型：Date,LocalDate,LocalDateTime
 
-4.以上3种类型的数组及列表
+4.以上3种类型的数组及列表，如String[],Set<String>,List<String>,HashSet<String>,ArrayList<String>
 
 5.自定义对象
 
-6.自定义对象的数组及列表
+6.自定义对象的数组及列表,如 YourClass[],Set<YourClass>,List<YourClass>,HashSet<YourClass>,ArrayList<YourClass>
 
 
 ## 三、开发背景

@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.iceolive</groupId>
     <artifactId>xpathmapper</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <licenses>
         <license>
             <name>Mozilla Public License, version 2.0</name>

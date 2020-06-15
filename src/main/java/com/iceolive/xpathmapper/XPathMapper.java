@@ -1,5 +1,6 @@
 package com.iceolive.xpathmapper;
 
+import com.iceolive.xpathmapper.annotation.XPath;
 import com.iceolive.xpathmapper.util.CollectionUtil;
 import com.iceolive.xpathmapper.util.DateUtil;
 import com.iceolive.xpathmapper.util.ReflectUtil;
@@ -8,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
-import com.iceolive.xpathmapper.annotation.XPath;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
@@ -23,7 +23,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *  xml工具类
+ * xml工具类
+ *
  * @author:wangmianzhe
  **/
 @Slf4j
@@ -40,6 +41,10 @@ public class XPathMapper {
             String xPathStr = xPath.value();
             if (xPathStr.startsWith("./")) {
                 xPathStr = prefix + xPathStr.substring(1);
+            }
+            //移除最后一个非节点
+            if (xPathStr.endsWith("text()") || xPathStr.contains("@")) {
+                xPathStr = xPathStr.substring(0, xPathStr.lastIndexOf("/"));
             }
             List<Node> nodes = document.selectNodes(xPathStr);
             if (CollectionUtil.isEmpty(nodes)) {
@@ -66,7 +71,7 @@ public class XPathMapper {
                 if (xPath.value().endsWith("text()")) {
                     str = nodes.get(i).getText();
                 } else if (xPath.value().contains("@")) {
-                    str = nodes.get(i).getStringValue();
+                    str = ((Element)nodes.get(i)).attribute(xPath.value().substring(xPath.value().lastIndexOf("@")+1)).getStringValue();
                 } else {
                     Object obj1;
                     if (i == 0) {
@@ -78,11 +83,11 @@ public class XPathMapper {
                     if (isArray) {
                         Object obj2 = ReflectUtil.newInstance(type);
                         Array.set(obj1, i, obj2);
-                        getValue(document, type, obj2, xPathStr);
+                        getValue(document, type, obj2, xPathStr + "[" + (i + 1) + "]");
                     } else if (isList) {
                         Object obj2 = ReflectUtil.newInstance(type);
                         ((List) obj1).add(obj2);
-                        getValue(document, type, obj2, xPathStr);
+                        getValue(document, type, obj2, xPathStr + "[" + (i + 1) + "]");
                     } else {
                         getValue(document, type, obj1, xPathStr);
                     }
@@ -107,20 +112,24 @@ public class XPathMapper {
     private static Object getObject(XPath xPath, Class<?> type, String str, String typeName) {
         Object val = null;
         //todo 支持更多类型
-        if (typeName.equals("int") || typeName.equals("java.lang.Integer")) {
-            val = Integer.parseInt(str);
-        } else if (typeName.equals("double") || typeName.equals("java.lang.Double")) {
-            val = Double.parseDouble(str);
-        } else if (typeName.equals("float") || typeName.equals("java.lang.Float")) {
-            val = Float.parseFloat(str);
-        } else if (typeName.equals("java.math.BigDecimal")) {
-            val = new BigDecimal(str);
-        } else if (typeName.equals("java.util.Date") || typeName.equals("java.time.LocalDateTime") || typeName.equals("java.time.LocalDate")) {
-            if (!StringUtil.isEmpty(xPath.format())) {
-                val = DateUtil.parse(str, xPath.format(), type);
-            }
-        } else {
+        if (StringUtil.isEmpty(str.trim())) {
             val = str;
+        } else {
+            if (typeName.equals("int") || typeName.equals("java.lang.Integer")) {
+                val = Integer.parseInt(str);
+            } else if (typeName.equals("double") || typeName.equals("java.lang.Double")) {
+                val = Double.parseDouble(str);
+            } else if (typeName.equals("float") || typeName.equals("java.lang.Float")) {
+                val = Float.parseFloat(str);
+            } else if (typeName.equals("java.math.BigDecimal")) {
+                val = new BigDecimal(str);
+            } else if (typeName.equals("java.util.Date") || typeName.equals("java.time.LocalDateTime") || typeName.equals("java.time.LocalDate")) {
+                if (!StringUtil.isEmpty(xPath.format())) {
+                    val = DateUtil.parse(str, xPath.format(), type);
+                }
+            } else {
+                val = str;
+            }
         }
         return val;
     }
@@ -216,7 +225,7 @@ public class XPathMapper {
                                 return;
                             }
                             values = ((List) val).toArray();
-                            setValue(document, element, values, node);
+                            setValue(document, element, values, node, xPath);
                         } else if (val.getClass().isArray()) {
                             int length = Array.getLength(val);
                             if (length == 0) {
@@ -226,7 +235,7 @@ public class XPathMapper {
                             for (int j = 0; j < length; j++) {
                                 values[j] = Array.get(val, j);
                             }
-                            setValue(document, element, values, node);
+                            setValue(document, element, values, node, xPath);
                         } else {
                             String str = val.toString();
                             if (!StringUtil.isEmpty(xPath.format())) {
@@ -241,7 +250,11 @@ public class XPathMapper {
                             if (node.startsWith("@")) {
                                 element.addAttribute(node.substring(1), str);
                             } else if (node.equals("text()")) {
-                                element.setText(str);
+                                if (xPath.CDATA()) {
+                                    element.addCDATA(str);
+                                } else {
+                                    element.setText(str);
+                                }
                             } else {
                                 //处理对象
                                 element = element.addElement(node);
@@ -268,7 +281,7 @@ public class XPathMapper {
     }
 
 
-    private static void setValue(Document document, Element element, Object[] values, String node) {
+    private static void setValue(Document document, Element element, Object[] values, String node, XPath xPath) {
         Element parent = element.getParent();
         Element currentElement = element;
         for (int j = 0; j < values.length; j++) {
@@ -284,7 +297,11 @@ public class XPathMapper {
             if (node.startsWith("@")) {
                 element.addAttribute(node.substring(1), values[j].toString());
             } else if (node.equals("text()")) {
-                element.setText(values[j].toString());
+                if (xPath.CDATA()) {
+                    element.addCDATA( values[j].toString());
+                } else {
+                    element.setText(values[j].toString());
+                }
             } else {
                 if (currentElement.elements(node).size() > j) {
                     element = currentElement.elements(node).get(j);

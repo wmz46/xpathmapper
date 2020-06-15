@@ -24,4 +24,6 @@ public @interface XPath {
      * @return 日期格式，类型为Date,LocalDate,LocalDateTime时生效
      */
     String format() default "";
+
+    boolean CDATA() default false;
 }

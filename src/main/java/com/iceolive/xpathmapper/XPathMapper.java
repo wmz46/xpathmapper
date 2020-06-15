@@ -71,7 +71,10 @@ public class XPathMapper {
                 if (xPath.value().endsWith("text()")) {
                     str = nodes.get(i).getText();
                 } else if (xPath.value().contains("@")) {
-                    str = ((Element)nodes.get(i)).attribute(xPath.value().substring(xPath.value().lastIndexOf("@")+1)).getStringValue();
+                    Attribute attribute = ((Element)nodes.get(i)).attribute(xPath.value().substring(xPath.value().lastIndexOf("@")+1));
+                    if(attribute !=null){
+                        str =attribute.getStringValue();
+                    }
                 } else {
                     Object obj1;
                     if (i == 0) {

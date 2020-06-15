@@ -71,7 +71,10 @@ XPathMapper.format(student, true);//第二个参数表示是否去除xml报文�
 ```java
 Student student = XPathMapper.parse(xml,Student.class);
 ```
-### 4.字段支持类型
+### 4.网页内容反序列化
+//为避免&符号问题，组件会去除html中的script标签和注释
+Student student = XPathMapper.parseHtml(html,Student.class);
+### 5.字段支持类型
 目前字段支持类型
 
 1.字符串类型：String

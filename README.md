@@ -90,7 +90,7 @@ Student student = XPathMapper.parseHtml(html,Student.class);
 
 2.数值类型：int,float,double,double,Integer,Float,Double,BigDecimal,尚未支持数值类型的格式定义。
 
-3.日期类型：Date,LocalDate,LocalDateTime
+3.日期类型：Date,LocalDate,LocalDateTime,日期类型请加上format,避免序列化反序列化异常。
 
 4.以上3种类型的数组及列表，如String[],Set\<String>,List\<String>,HashSet\<String>,ArrayList\<String>
 
@@ -150,7 +150,7 @@ public static class Course{
     private int score;
 }
 ```
-明显和上面的处理方式相比，繁琐了很多。
+为了避免写一堆和实际业务无关的类型，故开发此组件。
 
 ## 四、存在的问题
 ### 命名空间

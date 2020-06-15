@@ -315,13 +315,23 @@ public class XPathMapper {
                     }
                 }
             }
+            String str = values[j].toString();
+            if (!StringUtil.isEmpty(xPath.format())) {
+                if (values[j] instanceof Date) {
+                    str = DateUtil.format(((Date) values[j]), xPath.format());
+                } else if (values[j] instanceof LocalDate) {
+                    str = DateUtil.format(((LocalDate) values[j]), xPath.format());
+                } else if (values[j] instanceof LocalDateTime) {
+                    str = DateUtil.format(((LocalDateTime) values[j]), xPath.format());
+                }
+            }
             if (node.startsWith("@")) {
-                element.addAttribute(node.substring(1), values[j].toString());
+                element.addAttribute(node.substring(1), str);
             } else if (node.equals("text()")) {
                 if (xPath.CDATA()) {
-                    element.addCDATA( values[j].toString());
+                    element.addCDATA(str);
                 } else {
-                    element.setText(values[j].toString());
+                    element.setText(str);
                 }
             } else {
                 if (currentElement.elements(node).size() > j) {

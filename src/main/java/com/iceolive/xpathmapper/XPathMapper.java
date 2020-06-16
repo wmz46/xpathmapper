@@ -260,15 +260,7 @@ public class XPathMapper {
                             setValue(document, element, values, node, xPath);
                         } else {
                             String str = val.toString();
-                            if (!StringUtil.isEmpty(xPath.format())) {
-                                if (val instanceof Date) {
-                                    str = DateUtil.format(((Date) val), xPath.format());
-                                } else if (val instanceof LocalDate) {
-                                    str = DateUtil.format(((LocalDate) val), xPath.format());
-                                } else if (val instanceof LocalDateTime) {
-                                    str = DateUtil.format(((LocalDateTime) val), xPath.format());
-                                }
-                            }
+                            str = getString(xPath, val, str);
                             if (node.startsWith("@")) {
                                 element.addAttribute(node.substring(1), str);
                             } else if (node.equals("text()")) {
@@ -316,16 +308,9 @@ public class XPathMapper {
                     }
                 }
             }
+            Object val = values[j];
             String str = values[j].toString();
-            if (!StringUtil.isEmpty(xPath.format())) {
-                if (values[j] instanceof Date) {
-                    str = DateUtil.format(((Date) values[j]), xPath.format());
-                } else if (values[j] instanceof LocalDate) {
-                    str = DateUtil.format(((LocalDate) values[j]), xPath.format());
-                } else if (values[j] instanceof LocalDateTime) {
-                    str = DateUtil.format(((LocalDateTime) values[j]), xPath.format());
-                }
-            }
+            str = getString(xPath, val, str);
             if (node.startsWith("@")) {
                 element.addAttribute(node.substring(1), str);
             } else if (node.equals("text()")) {
@@ -343,5 +328,18 @@ public class XPathMapper {
                 setValue(document, element, values[j]);
             }
         }
+    }
+
+    private static String getString(XPath xPath, Object val, String str) {
+        if (!StringUtil.isEmpty(xPath.format())) {
+            if (val instanceof Date) {
+                str = DateUtil.format(((Date) val), xPath.format());
+            } else if (val instanceof LocalDate) {
+                str = DateUtil.format(((LocalDate) val), xPath.format());
+            } else if (val instanceof LocalDateTime) {
+                str = DateUtil.format(((LocalDateTime)val), xPath.format());
+            }
+        }
+        return str;
     }
 }

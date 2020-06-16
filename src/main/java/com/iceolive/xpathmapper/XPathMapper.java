@@ -5,6 +5,7 @@ import com.iceolive.xpathmapper.util.CollectionUtil;
 import com.iceolive.xpathmapper.util.DateUtil;
 import com.iceolive.xpathmapper.util.ReflectUtil;
 import com.iceolive.xpathmapper.util.StringUtil;
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
@@ -22,6 +23,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * xml工具类
@@ -31,6 +34,8 @@ import java.util.Set;
 @Slf4j
 public class XPathMapper {
 
+
+    final static Pattern r = Pattern.compile("^(.+)\\[(\\d+)\\]$");
 
     private static <T> Object getValue(Document document, Class<T> clazz, Object obj, String prefix) {
         List<Field> fields = ReflectUtil.getAllFields(clazz);
@@ -126,26 +131,46 @@ public class XPathMapper {
     private static Object getObject(XPath xPath, Class<?> type, String str, String typeName) {
         Object val = null;
         //todo 支持更多类型
-        if (StringUtil.isEmpty(str.trim())) {
-            val = str;
-        } else {
-            if (typeName.equals("long") || typeName.equals("java.lang.Long")) {
-                val = Long.parseLong(str);
-            } else if (typeName.equals("int") || typeName.equals("java.lang.Integer")) {
+        if ("int".equals(typeName)) {
+            if (!StringUtil.isEmpty(str)) {
                 val = Integer.parseInt(str);
-            } else if (typeName.equals("double") || typeName.equals("java.lang.Double")) {
-                val = Double.parseDouble(str);
-            } else if (typeName.equals("float") || typeName.equals("java.lang.Float")) {
-                val = Float.parseFloat(str);
-            } else if (typeName.equals("java.math.BigDecimal")) {
-                val = new BigDecimal(str);
-            } else if (typeName.equals("java.util.Date") || typeName.equals("java.time.LocalDateTime") || typeName.equals("java.time.LocalDate")) {
-                if (!StringUtil.isEmpty(xPath.format())) {
-                    val = DateUtil.parse(str, xPath.format(), type);
-                }
             } else {
-                val = str;
+                val = 0;
             }
+        } else if ("java.lang.Integer".equals(typeName)) {
+            if (!StringUtil.isEmpty(str)) {
+                val = Integer.parseInt(str);
+            }
+        } else if ("long".equals(typeName)) {
+            if (!StringUtil.isEmpty(str)) {
+                val = Long.parseLong(str);
+            } else {
+                val = 0L;
+            }
+        } else if ("java.lang.Long".equals(typeName)) {
+            if (!StringUtil.isEmpty(str)) {
+                val = Long.parseLong(str);
+            }
+        } else if ("float".equals(typeName)) {
+            if (!StringUtil.isEmpty(str)) {
+                val = Float.parseFloat(str);
+            } else {
+                val = 0f;
+            }
+        } else if ("java.lang.Float".equals(typeName)) {
+            if (!StringUtil.isEmpty(str)) {
+                val = Float.parseFloat(str);
+            }
+        } else if ("java.math.BigDecimal".equals(typeName)) {
+            if (!StringUtil.isEmpty(str)) {
+                val = new BigDecimal(str);
+            }
+        } else if ("java.util.Date".equals(typeName) || "java.time.LocalDateTime".equals(typeName) || "java.time.LocalDate".equals(typeName)) {
+            if (!StringUtil.isEmpty(str) && !StringUtil.isEmpty(xPath.format())) {
+                val = DateUtil.parse(str, xPath.format(), type);
+            }
+        } else {
+            val = str;
         }
         return val;
     }
@@ -276,16 +301,35 @@ public class XPathMapper {
                             }
                         }
                     } else {
+                        Matcher m = r.matcher(node);
+                        int num = 0;
+                        if (m.find()) {
+                            node = m.group(1);
+                            num = Integer.parseInt(m.group(2)) - 1;
+                            if (num < 0) {
+                                throw new RuntimeException("不支持的xpath:" + xPath.value());
+                            }
+                        }
                         if (element == null) {
                             if (document.getRootElement() == null) {
                                 element = document.addElement(node);
                             } else {
                                 element = document.getRootElement();
                             }
-                        } else if (element.element(node) == null) {
-                            element = element.addElement(node);
+                        } else if (num == 0) {
+                            if (element.element(node) == null) {
+                                element = element.addElement(node);
+                            } else {
+                                element = element.element(node);
+                            }
                         } else {
-                            element = element.element(node);
+                            List<Element> children = element.elements(node);
+                            if (num >= children.size()) {
+                                for (int j = 0; j <= num - children.size(); j++) {
+                                    element.addElement(node);
+                                }
+                            }
+                            element = element.elements(node).get(num);
                         }
                     }
                 }
@@ -337,7 +381,7 @@ public class XPathMapper {
             } else if (val instanceof LocalDate) {
                 str = DateUtil.format(((LocalDate) val), xPath.format());
             } else if (val instanceof LocalDateTime) {
-                str = DateUtil.format(((LocalDateTime)val), xPath.format());
+                str = DateUtil.format(((LocalDateTime) val), xPath.format());
             }
         }
         return str;

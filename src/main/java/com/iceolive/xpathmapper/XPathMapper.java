@@ -142,6 +142,16 @@ public class XPathMapper {
             if (!StringUtil.isEmpty(str)) {
                 val = Integer.parseInt(str);
             }
+        } else  if ("short".equals(typeName)) {
+            if (!StringUtil.isEmpty(str)) {
+                val = Short.parseShort(str);
+            } else {
+                val = 0;
+            }
+        } else if ("java.lang.Short".equals(typeName)) {
+            if (!StringUtil.isEmpty(str)) {
+                val = Short.parseShort(str);
+            }
         } else if ("long".equals(typeName)) {
             if (!StringUtil.isEmpty(str)) {
                 val = Long.parseLong(str);

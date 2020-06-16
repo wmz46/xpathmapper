@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 /**
- *  反射工具类
+ * 反射工具类
+ *
  * @author:wangmianzhe
  **/
 @Slf4j
@@ -40,12 +41,13 @@ public class ReflectUtil {
 
     /**
      * 设置值
-     * @param m 对象
+     *
+     * @param m         对象
      * @param fieldName 字段名
-     * @param value 值
-     * @param clazz  类型
+     * @param value     值
+     * @param clazz     类型
      */
-    public static  void setValue(Object m, String fieldName, Object value, Class<?> clazz) {
+    public static void setValue(Object m, String fieldName, Object value, Class<?> clazz) {
         if (StringUtil.isEmpty(fieldName)) {
             return;
         }
@@ -72,11 +74,12 @@ public class ReflectUtil {
     }
 
     /**
-     *  获取值
-     * @param m 对象
+     * 获取值
+     *
+     * @param m         对象
      * @param fieldName 字段名
-     * @param clazz 类型
-     * @return  值
+     * @param clazz     类型
+     * @return 值
      */
     public static Object getValue(Object m, String fieldName, Class<?> clazz) {
         try {
@@ -119,7 +122,7 @@ public class ReflectUtil {
                     return (T) new ArrayList();
                 } else if (Map.class.isAssignableFrom(clazz)) {
                     return (T) new HashMap();
-                }else if(Set.class.isAssignableFrom(clazz)){
+                } else if (Set.class.isAssignableFrom(clazz)) {
                     return (T) new HashSet<>();
                 } else {
                     throw new RuntimeException("不支持类型");
@@ -128,22 +131,23 @@ public class ReflectUtil {
                 return null;
             } else if (clazz.isAssignableFrom(Integer.class)) {
                 return null;
-            } else if (clazz.isAssignableFrom(Double.class)) {
+            } else if (clazz.isAssignableFrom(Short.class)) {
+                return null;
+            } else if (clazz.isAssignableFrom(Long.class)) {
                 return null;
             } else if (clazz.isAssignableFrom(Float.class)) {
                 return null;
+            } else if (clazz.isAssignableFrom(Double.class)) {
+                return null;
             } else if (clazz.isAssignableFrom(BigDecimal.class)) {
                 return null;
-            } else if(clazz.isAssignableFrom(LocalDateTime.class)){
+            } else if (clazz.isAssignableFrom(LocalDateTime.class)) {
                 return null;
-            }else if(clazz.isAssignableFrom(LocalDate.class)){
+            } else if (clazz.isAssignableFrom(LocalDate.class)) {
                 return null;
-            }else if(clazz.isAssignableFrom(Long.class)){
+            } else if (clazz.isAssignableFrom(Boolean.class)) {
                 return null;
-            }else if(clazz.isAssignableFrom(Boolean.class)){
-                return null;
-            }
-            else {
+            } else {
                 Constructor[] cons = clazz.getConstructors();
                 if (Arrays.stream(cons).filter(m -> m.toString().endsWith("()")).count() == 0) {
                     throw new RuntimeException("类型[" + clazz.getTypeName() + "]没有无参构造函数,无法反序列化");

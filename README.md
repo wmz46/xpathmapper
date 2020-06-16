@@ -6,7 +6,7 @@
 <dependency>
   <groupId>com.iceolive</groupId>
   <artifactId>xpathmapper</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
 </dependency>
 ```
 ## 二、快速开始
@@ -14,7 +14,7 @@
 ```xml
 <input>
     <body>
-        <student age="20">
+        <student age="20" boarding="否">
             <name>张三</name>
             <birthday>2000年01月01日</birthday>
             <description><![CDATA[<天行健，君子以自强不息。>]]></description>
@@ -43,6 +43,9 @@ public class Student {
     private String description;
     @XPath("/input/body/student/@age")
     private int age;
+    //布尔型如需特殊处理显示字符串，请设置trueString和falseString，默认为true/false
+    @XPath(value ="/input/body/student/@boarding",trueString="是",falseString="否")
+    private boolean boarding;
     @XPath(value = "/input/body/student/birthday/text()",format="yyyy年MM月dd日")
     private Date birthday;
     @XPath("/input/body/student/city/@name")
@@ -90,19 +93,21 @@ Student student = XPathMapper.parseHtml(html,Student.class);
 
 2.数值类型：int,long,float,double,double,Integer,Long,Float,Double,BigDecimal,尚未支持数值类型的格式定义。
 
-3.日期类型：Date,LocalDate,LocalDateTime,日期类型请加上format,避免序列化反序列化异常。
+3.日期类型：Date,LocalDate,LocalDateTime,日期类型请给@XPath加上format,避免序列化反序列化异常。
 
-4.以上3种类型的数组及列表，如String[],Set\<String>,List\<String>,HashSet\<String>,ArrayList\<String>
+4.布尔类型:boolean,Boolean，默认序列化字符串为true/false，如需自定义请设置@XPath的trueString和falseString。
 
-5.自定义对象（必须有无参构造方法，否则会无法反序列化）
+5.以上4种类型的数组及列表，如String[],Set\<String>,List\<String>,HashSet\<String>,ArrayList\<String>
 
-6.自定义对象的数组及列表,如 YourClass[],Set\<YourClass>,List\<YourClass>,HashSet\<YourClass>,ArrayList\<YourClass>
+6.自定义对象（必须有无参构造方法，否则会无法反序列化）
+
+7.自定义对象的数组及列表,如 YourClass[],Set\<YourClass>,List\<YourClass>,HashSet\<YourClass>,ArrayList\<YourClass>
 
 
 ## 三、开发背景
 在对接第三方xml报文接口时，有时对方提供的报文结构不太符合我们抽象出来的对象结构。通过JAXBContext虽然也可以实现需求，但可能需要写很多没有实际意义的中间嵌套类，而且赋值取值嵌套层次多的话，除了代码写起来多，还得判断中间嵌套层是否为null避免空指针异常，十分麻烦。
  
-以上面的xml为例（为避免过于复杂化，此处忽略description和tags节点），假如我们用JAXBContext，需要定义如下类型
+以上面的xml为例（为避免过于复杂化，此处忽默某些节点），假如我们用JAXBContext，需要定义如下类型
 ```java
 @Data
 @XmlRootElement(name="input")

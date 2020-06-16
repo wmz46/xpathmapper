@@ -6,7 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *  xPath注解
+ * xPath注解
+ *
  * @author:wangmianzhe
  */
 @Target(ElementType.FIELD)
@@ -16,6 +17,7 @@ public @interface XPath {
      * 必须是完整路径的xpath。如果是嵌套对象，则可以使用相对路径
      * /text() 结尾表示取节点内文本值
      * /@xxx 结尾表示取xxx的属性值
+     *
      * @return xpath
      */
     String value();
@@ -25,5 +27,14 @@ public @interface XPath {
      */
     String format() default "";
 
+    /**
+     * 是否嵌套CDATA节点
+     *
+     * @return
+     */
     boolean CDATA() default false;
+
+    String trueString() default "true";
+
+    String falseString() default "false";
 }

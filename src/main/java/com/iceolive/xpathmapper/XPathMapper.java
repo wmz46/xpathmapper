@@ -5,6 +5,7 @@ import com.iceolive.xpathmapper.util.CollectionUtil;
 import com.iceolive.xpathmapper.util.DateUtil;
 import com.iceolive.xpathmapper.util.ReflectUtil;
 import com.iceolive.xpathmapper.util.StringUtil;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.*;
@@ -168,6 +169,28 @@ public class XPathMapper {
         } else if ("java.util.Date".equals(typeName) || "java.time.LocalDateTime".equals(typeName) || "java.time.LocalDate".equals(typeName)) {
             if (!StringUtil.isEmpty(str) && !StringUtil.isEmpty(xPath.format())) {
                 val = DateUtil.parse(str, xPath.format(), type);
+            }
+        } else if ("boolean".equals(typeName)) {
+            if (!StringUtil.isEmpty(str)) {
+                if (str.equals(xPath.trueString())) {
+                    val = true;
+                } else if (str.equals(xPath.falseString())) {
+                    val = false;
+                } else {
+                    val = false;
+                }
+            } else {
+                val = false;
+            }
+        } else if ("java.lang.Boolean".equals(typeName)) {
+            if (!StringUtil.isEmpty(str)) {
+                if (str.equals(xPath.trueString())) {
+                    val = true;
+                } else if (str.equals(xPath.falseString())) {
+                    val = false;
+                } else {
+                    val = false;
+                }
             }
         } else {
             val = str;
@@ -382,6 +405,13 @@ public class XPathMapper {
                 str = DateUtil.format(((LocalDate) val), xPath.format());
             } else if (val instanceof LocalDateTime) {
                 str = DateUtil.format(((LocalDateTime) val), xPath.format());
+            }
+        }
+        if ("boolean".equals(val.getClass().getName())) {
+            str = val.equals(true) ? xPath.trueString() : xPath.falseString();
+        } else if (val instanceof Boolean) {
+            if (val != null) {
+                str = val.equals(true) ? xPath.trueString() : xPath.falseString();
             }
         }
         return str;

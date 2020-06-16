@@ -140,6 +140,8 @@ public class ReflectUtil {
                 return null;
             }else if(clazz.isAssignableFrom(Long.class)){
                 return null;
+            }else if(clazz.isAssignableFrom(Boolean.class)){
+                return null;
             }
             else {
                 Constructor[] cons = clazz.getConstructors();

@@ -82,9 +82,12 @@ Student student = XPathMapper.parseHtml(html,Student.class);
 ### 5.注解说明
 ```java
     //value 表示字段的xpath，嵌套类的字段需使用相对路径./开头，非嵌套类的字段需使用完整路径/开头
+    //当字段不是自定义对象也不是自定义对象的数组或列表，结尾必须是“text()”或“@属性名”，指明是取节点内容或属性值。
     //CDATA 表示内容是否需要CDATA标签包裹，默认为false
     //format 日期类型格式化用，无默认值。 如果是LocalDate类型，请注意不要写到时分秒。
-    @XPath(value="/input/body/student/description/text()",CDATA = true,format="yyyy-MM-dd HH:mm:ss")
+    //trueString  布尔类型为真时的显示字符串，默认值true
+    //falseString 布尔类型为假时的显示字符串，默认值false
+    @XPath(value="/input/body/student/description/text()",CDATA = true,format="yyyy-MM-dd HH:mm:ss",trueString="是",falseString="否")
 ```
 ### 6.字段支持类型
 目前字段支持类型
@@ -97,11 +100,34 @@ Student student = XPathMapper.parseHtml(html,Student.class);
 
 4.布尔类型:boolean,Boolean，默认序列化字符串为true/false，如需自定义请设置@XPath的trueString和falseString。
 
-5.以上4种类型的数组及列表，如String[],Set\<String>,List\<String>,HashSet\<String>,ArrayList\<String>
+5.以上4种类型的数组及列表，如String[],Set\<String>,List\<String>,HashSet\<String>,ArrayList\<String>，xpath的最后一个节点必须是text()或@属性名,倒数第二个节点为循环节点。
+
+注：不支持循环节点不是倒数第二个节点的设置。
+如xml结构如下，则不支持直接定义基础类型数组。因为循环节点为中间节点b，而不是最终节点c。
+```xml
+<a>
+    <b><c>1</c></b>
+    <b><c>2</c></b>
+    <b><c>3</c></b>
+</a>
+```
+上述结构只能通过增加一个嵌套类处理，如
+```java
+@Data
+public class A{
+    @XPath("/a/b")
+    private List<B> bList;
+}
+@Data
+public class B{
+    @XPath("./c/text()")
+    private int c;
+}
+```
 
 6.自定义对象（必须有无参构造方法，否则会无法反序列化）
 
-7.自定义对象的数组及列表,如 YourClass[],Set\<YourClass>,List\<YourClass>,HashSet\<YourClass>,ArrayList\<YourClass>
+7.自定义对象的数组及列表,如 YourClass[],Set\<YourClass>,List\<YourClass>,HashSet\<YourClass>,ArrayList\<YourClass>，xpath的最后一个节点为循环节点。
 
 
 ## 三、开发背景

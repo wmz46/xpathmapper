@@ -64,7 +64,7 @@ public class XPathMapper {
                 if (List.class.isAssignableFrom((Class<?>) parameterizedType.getRawType())) {
                     type = (Class) parameterizedType.getActualTypeArguments()[0];
                     isList = true;
-                }else if(Set.class.isAssignableFrom((Class<?>)parameterizedType.getRawType())){
+                } else if (Set.class.isAssignableFrom((Class<?>) parameterizedType.getRawType())) {
                     type = (Class) parameterizedType.getActualTypeArguments()[0];
                     isSet = true;
                 }
@@ -76,9 +76,9 @@ public class XPathMapper {
                 if (xPath.value().endsWith("text()")) {
                     str = nodes.get(i).getText();
                 } else if (xPath.value().contains("@")) {
-                    Attribute attribute = ((Element)nodes.get(i)).attribute(xPath.value().substring(xPath.value().lastIndexOf("@")+1));
-                    if(attribute !=null){
-                        str =attribute.getStringValue();
+                    Attribute attribute = ((Element) nodes.get(i)).attribute(xPath.value().substring(xPath.value().lastIndexOf("@") + 1));
+                    if (attribute != null) {
+                        str = attribute.getStringValue();
                     }
                 } else {
                     Object obj1;
@@ -92,7 +92,7 @@ public class XPathMapper {
                         Object obj2 = ReflectUtil.newInstance(type);
                         Array.set(obj1, i, obj2);
                         getValue(document, type, obj2, xPathStr + "[" + (i + 1) + "]");
-                    } else if(isSet){
+                    } else if (isSet) {
                         Object obj2 = ReflectUtil.newInstance(type);
                         ((Set) obj1).add(obj2);
                         getValue(document, type, obj2, xPathStr + "[" + (i + 1) + "]");
@@ -109,8 +109,8 @@ public class XPathMapper {
                     Object val = getObject(xPath, type, str, typeName);
                     if (isArray) {
                         Array.set(value, i, val);
-                    }else if(isSet){
-                        ((Set)value).add(val);
+                    } else if (isSet) {
+                        ((Set) value).add(val);
                     } else if (isList) {
                         ((List) value).add(val);
                     } else {
@@ -129,7 +129,9 @@ public class XPathMapper {
         if (StringUtil.isEmpty(str.trim())) {
             val = str;
         } else {
-            if (typeName.equals("int") || typeName.equals("java.lang.Integer")) {
+            if (typeName.equals("long") || typeName.equals("java.lang.Long")) {
+                val = Long.parseLong(str);
+            } else if (typeName.equals("int") || typeName.equals("java.lang.Integer")) {
                 val = Integer.parseInt(str);
             } else if (typeName.equals("double") || typeName.equals("java.lang.Double")) {
                 val = Double.parseDouble(str);
@@ -234,14 +236,13 @@ public class XPathMapper {
                         Object[] values;
                         if (val == null) {
 
-                        } else if(val instanceof  Set){
+                        } else if (val instanceof Set) {
                             if (((Set) val).isEmpty()) {
                                 return;
                             }
                             values = ((Set) val).toArray();
                             setValue(document, element, values, node, xPath);
-                        }
-                        else if (val instanceof List) {
+                        } else if (val instanceof List) {
                             if (((List) val).isEmpty()) {
                                 return;
                             }

@@ -10,7 +10,8 @@
     </parent>
     <groupId>com.iceolive</groupId>
     <artifactId>xpathmapper</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
+    <description>xpathmapper is a XML processor (XML parser + XML generator) written in Java</description>
     <licenses>
         <license>
             <name>Mozilla Public License, version 2.0</name>

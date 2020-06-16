@@ -88,7 +88,7 @@ Student student = XPathMapper.parseHtml(html,Student.class);
 
 1.字符串类型：String
 
-2.数值类型：int,float,double,double,Integer,Float,Double,BigDecimal,尚未支持数值类型的格式定义。
+2.数值类型：int,long,float,double,double,Integer,Long,Float,Double,BigDecimal,尚未支持数值类型的格式定义。
 
 3.日期类型：Date,LocalDate,LocalDateTime,日期类型请加上format,避免序列化反序列化异常。
 

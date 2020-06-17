@@ -127,13 +127,13 @@ public class B{
 
 6.自定义对象（必须有无参构造方法，否则会无法反序列化）
 
-7.自定义对象的数组及列表,如 YourClass[],Set\<YourClass>,List\<YourClass>,HashSet\<YourClass>,ArrayList\<YourClass>，xpath的最后一个节点为循环节点。
+7.自定义对象（必须有无参构造方法，否则会无法反序列化）的数组及列表,如 YourClass[],Set\<YourClass>,List\<YourClass>,HashSet\<YourClass>,ArrayList\<YourClass>，xpath的最后一个节点为循环节点。
 
 
 ## 三、开发背景
 在对接第三方xml报文接口时，有时对方提供的报文结构不太符合我们抽象出来的对象结构。通过JAXBContext虽然也可以实现需求，但可能需要写很多没有实际意义的中间嵌套类，而且赋值取值嵌套层次多的话，除了代码写起来多，还得判断中间嵌套层是否为null避免空指针异常，十分麻烦。
  
-以上面的xml为例（为避免过于复杂化，此处忽默某些节点），假如我们用JAXBContext，需要定义如下类型
+以上面的xml为例（为避免过于复杂化，此处忽略某些节点），假如我们用JAXBContext，需要定义如下类型
 ```java
 @Data
 @XmlRootElement(name="input")

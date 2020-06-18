@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.iceolive</groupId>
     <artifactId>xpathmapper</artifactId>
-    <version>1.0.3</version>
+    <version>1.1.0</version>
     <description>xpathmapper is a XML processor (XML parser + XML generator) written in Java</description>
     <licenses>
         <license>
@@ -66,6 +66,11 @@
             <version>1.18.8</version>
             <scope>provided</scope>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.iceolive</groupId>
+            <artifactId>stringutil</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.dom4j/dom4j -->
         <dependency>

@@ -1,12 +1,10 @@
 package com.iceolive.xpathmapper;
 
+import com.iceolive.util.StringUtil;
 import com.iceolive.xpathmapper.annotation.XPath;
 import com.iceolive.xpathmapper.util.CollectionUtil;
 import com.iceolive.xpathmapper.util.DateUtil;
 import com.iceolive.xpathmapper.util.ReflectUtil;
-import com.iceolive.xpathmapper.util.StringUtil;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
@@ -142,7 +140,7 @@ public class XPathMapper {
             if (!StringUtil.isEmpty(str)) {
                 val = Integer.parseInt(str);
             }
-        } else  if ("short".equals(typeName)) {
+        } else if ("short".equals(typeName)) {
             if (!StringUtil.isEmpty(str)) {
                 val = Short.parseShort(str);
             } else {
@@ -409,13 +407,7 @@ public class XPathMapper {
 
     private static String getString(XPath xPath, Object val, String str) {
         if (!StringUtil.isEmpty(xPath.format())) {
-            if (val instanceof Date) {
-                str = DateUtil.format(((Date) val), xPath.format());
-            } else if (val instanceof LocalDate) {
-                str = DateUtil.format(((LocalDate) val), xPath.format());
-            } else if (val instanceof LocalDateTime) {
-                str = DateUtil.format(((LocalDateTime) val), xPath.format());
-            }
+            str = StringUtil.format(val, xPath.format());
         }
         if ("boolean".equals(val.getClass().getName())) {
             str = val.equals(true) ? xPath.trueString() : xPath.falseString();

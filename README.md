@@ -94,7 +94,9 @@ Student student = XPathMapper.parseHtml(html,Student.class);
 
 1.字符串类型：String
 
-2.数值类型：int,short,long,float,double,double,Integer,Short,Long,Float,Double,BigDecimal,尚未支持数值类型的格式定义。
+2.数值类型：int,short,long,float,double,double,Integer,Short,Long,Float,Double,BigDecimal,v1.1.0及以上版本支持数值类型的格式定义，目前仅支持序列化时格式化，反序列化带有格式的xml需后续增加支持。
+
+数值格式化的定义请参考[标准数字格式字符串](https://docs.microsoft.com/zh-cn/dotnet/standard/base-types/standard-numeric-format-strings)和[自定义数字格式字符串](https://docs.microsoft.com/zh-cn/dotnet/standard/base-types/custom-numeric-format-strings),格式化组件项目名地址[wmz46/stringutil](https://github.com/wmz46/stringutil)。
 
 3.日期类型：Date,LocalDate,LocalDateTime,日期类型请给@XPath加上format,避免序列化反序列化异常。
 

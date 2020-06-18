@@ -15,20 +15,7 @@ import java.util.Date;
  **/
 @Slf4j
 public class DateUtil {
-    public static String format(LocalDate date, String format) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(format);
-        return dateTimeFormatter.format(date);
-    }
 
-    public static String format(LocalDateTime date, String format) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(format);
-        return dateTimeFormatter.format(date);
-    }
-
-    public static String format(Date date, String format) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-        return simpleDateFormat.format(date);
-    }
 
     public static <T> T parse(String date, String format, Class<T> clazz) {
         if (clazz.equals(LocalDate.class)) {

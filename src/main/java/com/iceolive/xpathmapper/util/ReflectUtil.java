@@ -130,6 +130,8 @@ public class ReflectUtil {
                 }
             } else if (clazz.isPrimitive()) {
                 return null;
+            }else if(clazz.isAssignableFrom(Byte.class)){
+                return null;
             } else if (clazz.isAssignableFrom(Integer.class)) {
                 return null;
             } else if (clazz.isAssignableFrom(Short.class)) {
@@ -148,7 +150,9 @@ public class ReflectUtil {
                 return null;
             } else if (clazz.isAssignableFrom(Boolean.class)) {
                 return null;
-            } else {
+            } else if(clazz.isAssignableFrom(Character.class)){
+                return null;
+            }else {
                 Constructor[] cons = clazz.getConstructors();
                 if (Arrays.stream(cons).filter(m -> m.toString().endsWith("()")).count() == 0) {
                     throw new RuntimeException("类型[" + clazz.getTypeName() + "]没有无参构造函数,无法反序列化");

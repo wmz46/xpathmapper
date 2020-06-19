@@ -92,9 +92,9 @@ Student student = XPathMapper.parseHtml(html,Student.class);
 ### 6.字段支持类型
 目前字段支持类型
 
-1.字符串类型：String
+1.字符及字符串类型：String,char,Character
 
-2.数值类型：int,short,long,float,double,double,Integer,Short,Long,Float,Double,BigDecimal,v1.1.0及以上版本支持数值类型的格式定义，目前仅支持序列化时格式化，反序列化带有格式的xml需后续增加支持。
+2.数值类型：byte,int,short,long,float,double,double,Byte,Integer,Short,Long,Float,Double,BigDecimal,支持数值类型的格式定义，可以根据格式规则序列化和反序列化带有格式的数值字符串。
 
 数值格式化的定义请参考[标准数字格式字符串](https://docs.microsoft.com/zh-cn/dotnet/standard/base-types/standard-numeric-format-strings)和[自定义数字格式字符串](https://docs.microsoft.com/zh-cn/dotnet/standard/base-types/custom-numeric-format-strings),部分非常用格式可能未支持，详情请查看格式化组件项目[wmz46/stringutil](https://github.com/wmz46/stringutil)。
 

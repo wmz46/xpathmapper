@@ -3,7 +3,6 @@ package com.iceolive.xpathmapper;
 import com.iceolive.util.StringUtil;
 import com.iceolive.xpathmapper.annotation.XPath;
 import com.iceolive.xpathmapper.util.CollectionUtil;
-import com.iceolive.xpathmapper.util.DateUtil;
 import com.iceolive.xpathmapper.util.ReflectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.*;
@@ -17,9 +16,6 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -109,8 +105,7 @@ public class XPathMapper {
                     }
                 }
                 if (str != null) {
-                    String typeName = type.getName();
-                    Object val = getObject(xPath, type, str, typeName);
+                    Object val = getObject(xPath, type, str);
                     if (isArray) {
                         Array.set(value, i, val);
                     } else if (isSet) {
@@ -127,81 +122,14 @@ public class XPathMapper {
         return obj;
     }
 
-    private static Object getObject(XPath xPath, Class<?> type, String str, String typeName) {
+    private static Object getObject(XPath xPath, Class<?> type, String str) {
         Object val = null;
-        //todo 支持更多类型
-        if ("int".equals(typeName)) {
-            if (!StringUtil.isEmpty(str)) {
-                val = Integer.parseInt(str);
+        if (!StringUtil.isEmpty(str)) {
+            if (type.isAssignableFrom(boolean.class) || type.isAssignableFrom(Boolean.class)) {
+                val = StringUtil.parseBoolean(str, xPath.trueString(), xPath.falseString(), type);
             } else {
-                val = 0;
+                val = StringUtil.parse(str, xPath.format(), type);
             }
-        } else if ("java.lang.Integer".equals(typeName)) {
-            if (!StringUtil.isEmpty(str)) {
-                val = Integer.parseInt(str);
-            }
-        } else if ("short".equals(typeName)) {
-            if (!StringUtil.isEmpty(str)) {
-                val = Short.parseShort(str);
-            } else {
-                val = 0;
-            }
-        } else if ("java.lang.Short".equals(typeName)) {
-            if (!StringUtil.isEmpty(str)) {
-                val = Short.parseShort(str);
-            }
-        } else if ("long".equals(typeName)) {
-            if (!StringUtil.isEmpty(str)) {
-                val = Long.parseLong(str);
-            } else {
-                val = 0L;
-            }
-        } else if ("java.lang.Long".equals(typeName)) {
-            if (!StringUtil.isEmpty(str)) {
-                val = Long.parseLong(str);
-            }
-        } else if ("float".equals(typeName)) {
-            if (!StringUtil.isEmpty(str)) {
-                val = Float.parseFloat(str);
-            } else {
-                val = 0f;
-            }
-        } else if ("java.lang.Float".equals(typeName)) {
-            if (!StringUtil.isEmpty(str)) {
-                val = Float.parseFloat(str);
-            }
-        } else if ("java.math.BigDecimal".equals(typeName)) {
-            if (!StringUtil.isEmpty(str)) {
-                val = new BigDecimal(str);
-            }
-        } else if ("java.util.Date".equals(typeName) || "java.time.LocalDateTime".equals(typeName) || "java.time.LocalDate".equals(typeName)) {
-            if (!StringUtil.isEmpty(str) && !StringUtil.isEmpty(xPath.format())) {
-                val = DateUtil.parse(str, xPath.format(), type);
-            }
-        } else if ("boolean".equals(typeName)) {
-            if (!StringUtil.isEmpty(str)) {
-                if (str.equals(xPath.trueString())) {
-                    val = true;
-                } else if (str.equals(xPath.falseString())) {
-                    val = false;
-                } else {
-                    val = false;
-                }
-            } else {
-                val = false;
-            }
-        } else if ("java.lang.Boolean".equals(typeName)) {
-            if (!StringUtil.isEmpty(str)) {
-                if (str.equals(xPath.trueString())) {
-                    val = true;
-                } else if (str.equals(xPath.falseString())) {
-                    val = false;
-                } else {
-                    val = false;
-                }
-            }
-        } else {
-            val = str;
         }
         return val;
     }

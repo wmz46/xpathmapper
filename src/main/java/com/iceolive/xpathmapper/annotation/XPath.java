@@ -28,9 +28,7 @@ public @interface XPath {
     String format() default "";
 
     /**
-     * 是否嵌套CDATA节点
-     *
-     * @return
+     * @return  是否嵌套CDATA节点
      */
     boolean CDATA() default false;
 

@@ -70,7 +70,7 @@
         <dependency>
             <groupId>com.iceolive</groupId>
             <artifactId>stringutil</artifactId>
-            <version>1.1.0</version>
+            <version>1.1.1</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.dom4j/dom4j -->
         <dependency>

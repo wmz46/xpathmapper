@@ -4,7 +4,6 @@ import com.iceolive.util.StringUtil;
 import com.iceolive.xpathmapper.annotation.XPath;
 import com.iceolive.xpathmapper.util.CollectionUtil;
 import com.iceolive.xpathmapper.util.ReflectUtil;
-import lombok.extern.slf4j.Slf4j;
 import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
@@ -15,7 +14,6 @@ import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -26,7 +24,6 @@ import java.util.regex.Pattern;
  *
  * @author:wangmianzhe
  **/
-@Slf4j
 public class XPathMapper {
 
 
@@ -162,8 +159,7 @@ public class XPathMapper {
             getValue(document, clazz, obj, "");
             return obj;
         } catch (DocumentException e) {
-            log.error("xml反序列化异常", e);
-            throw new RuntimeException(e);
+            throw new RuntimeException("xml反序列化异常", e);
         }
     }
 
@@ -190,8 +186,7 @@ public class XPathMapper {
             xmlWriter.write(document);
             return stringWriter.toString();
         } catch (IOException e) {
-            log.error("xml序列化异常", e);
-            throw new RuntimeException(e);
+            throw new RuntimeException("xml序列化异常", e);
         }
     }
 
@@ -211,7 +206,7 @@ public class XPathMapper {
                     element = null;
                     nodes = xPath.value().substring(1).split("/");
                 } else {
-                    throw new RuntimeException("不支持的xpath");
+                    throw new RuntimeException("不支持的xpath:"+ xPath.value());
                 }
                 for (int i = 0; i < nodes.length; i++) {
                     String node = nodes[i];
@@ -337,9 +332,9 @@ public class XPathMapper {
         if (!StringUtil.isEmpty(xPath.format())) {
             str = StringUtil.format(val, xPath.format());
         }
-        if ("boolean".equals(val.getClass().getName())) {
+        if (val.getClass().isAssignableFrom(boolean.class)) {
             str = val.equals(true) ? xPath.trueString() : xPath.falseString();
-        } else if (val instanceof Boolean) {
+        } else if (val.getClass().isAssignableFrom(Boolean.class)) {
             if (val != null) {
                 str = val.equals(true) ? xPath.trueString() : xPath.falseString();
             }

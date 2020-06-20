@@ -1,7 +1,6 @@
 package com.iceolive.xpathmapper.util;
 
 import com.iceolive.util.StringUtil;
-import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -17,7 +16,6 @@ import java.util.*;
  *
  * @author:wangmianzhe
  **/
-@Slf4j
 public class ReflectUtil {
 
     public static <T> List<Field> getAllFields(Class<T> baseClazz) {
@@ -160,8 +158,7 @@ public class ReflectUtil {
                 return clazz.newInstance();
             }
         } catch (IllegalAccessException | InstantiationException e) {
-            log.error("反射创建对象异常", e);
-            throw new RuntimeException(e);
+            throw new RuntimeException("反射创建对象异常",e);
         }
     }
 }

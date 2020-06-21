@@ -2,6 +2,9 @@ package com.iceolive.xpathmapper;
 
 import com.iceolive.util.StringUtil;
 import com.iceolive.xpathmapper.annotation.XPath;
+import com.iceolive.xpathmapper.exception.UnsupportedXPathException;
+import com.iceolive.xpathmapper.exception.XmlFormatException;
+import com.iceolive.xpathmapper.exception.XmlParseException;
 import com.iceolive.xpathmapper.util.CollectionUtil;
 import com.iceolive.xpathmapper.util.ReflectUtil;
 import org.dom4j.*;
@@ -159,16 +162,13 @@ public class XPathMapper {
             getValue(document, clazz, obj, "");
             return obj;
         } catch (DocumentException e) {
-            throw new RuntimeException("xml反序列化异常", e);
+            throw new XmlParseException(e);
         }
     }
 
     public static String format(Object obj, boolean suppressDeclaration) {
         try {
             Document document = DocumentHelper.createDocument();
-            if (document == null) {
-                throw new RuntimeException("文档不能为空");
-            }
             setValue(document, null, obj);
             OutputFormat outputFormat = OutputFormat.createPrettyPrint();
             // 设置XML编码方式,即是用指定的编码方式保存XML文档到字符串(String),这里也可以指定为GBK或是ISO8859-1  
@@ -186,7 +186,7 @@ public class XPathMapper {
             xmlWriter.write(document);
             return stringWriter.toString();
         } catch (IOException e) {
-            throw new RuntimeException("xml序列化异常", e);
+            throw new XmlFormatException(e);
         }
     }
 
@@ -206,7 +206,7 @@ public class XPathMapper {
                     element = null;
                     nodes = xPath.value().substring(1).split("/");
                 } else {
-                    throw new RuntimeException("不支持的xpath:"+ xPath.value());
+                    throw new UnsupportedXPathException(xPath.value());
                 }
                 for (int i = 0; i < nodes.length; i++) {
                     String node = nodes[i];
@@ -261,7 +261,7 @@ public class XPathMapper {
                             node = m.group(1);
                             num = Integer.parseInt(m.group(2)) - 1;
                             if (num < 0) {
-                                throw new RuntimeException("不支持的xpath:" + xPath.value());
+                                throw new UnsupportedXPathException(xPath.value());
                             }
                         }
                         if (element == null) {

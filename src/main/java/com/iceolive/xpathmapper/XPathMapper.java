@@ -1,6 +1,5 @@
 package com.iceolive.xpathmapper;
 
-import com.alibaba.fastjson.JSON;
 import com.iceolive.util.StringUtil;
 import com.iceolive.xpathmapper.annotation.XPath;
 import com.iceolive.xpathmapper.exception.UnsupportedXPathException;

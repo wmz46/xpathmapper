@@ -161,4 +161,41 @@ public class ReflectUtil {
             throw new RuntimeException("反射创建对象异常",e);
         }
     }
+
+    public static  boolean isDateType(Class<?> clazz){
+        if(clazz.isAssignableFrom(Date.class)){
+            return  true;
+        }else if(clazz.isAssignableFrom(LocalDate.class)){
+            return  true;
+        }else if(clazz.isAssignableFrom(LocalDateTime.class)){
+            return  true;
+        }
+        return false;
+    }
+    public static boolean isBasicType(Class<?> clazz){
+        if(clazz.isPrimitive()){
+            return true;
+        }else if(clazz.isAssignableFrom(Boolean.class)){
+            return true;
+        }else if(clazz.isAssignableFrom(Character.class)){
+            return true;
+        }else if(clazz.isAssignableFrom(Byte.class)){
+            return true;
+        }else if(clazz.isAssignableFrom(Short.class)){
+            return  true;
+        }else if(clazz.isAssignableFrom(Integer.class)){
+            return  true;
+        }else if(clazz.isAssignableFrom(Long.class)){
+            return  true;
+        }else if(clazz.isAssignableFrom(Float.class)){
+            return  true;
+        }else if(clazz.isAssignableFrom(Double.class)){
+            return  true;
+        }else if(clazz.isAssignableFrom(BigDecimal.class)){
+            return  true;
+        }else if(isDateType(clazz)){
+            return  true;
+        }
+        return false;
+    }
 }

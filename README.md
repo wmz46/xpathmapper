@@ -6,7 +6,7 @@
 <dependency>
   <groupId>com.iceolive</groupId>
   <artifactId>xpathmapper</artifactId>
-  <version>1.1.1</version>
+  <version>1.2.0</version>
 </dependency>
 ```
 ## 二、快速开始
@@ -74,11 +74,56 @@ XPathMapper.format(student, true);//第二个参数表示是否去除xml报文�
 ```java
 Student student = XPathMapper.parse(xml,Student.class);
 ```
-### 4.网页内容反序列化
+### 4.爬虫反序列化
+HTML反序列化
 ```java
 //为避免&符号问题，组件会去除html中的script标签和注释
 Student student = XPathMapper.parseHtml(html,Student.class);
 ```
+JSON反序列化
+
+基于fastjson的JSONPath，语法请参考[JSONPath介绍](https://github.com/alibaba/fastjson/wiki/JSONPath)
+
+字段支持类型请参考第6点
+
+对象字段添加注解
+```java 
+@Data
+public class A {
+    @JsonPath("$.a")
+    private Byte a;
+    @JsonPath("$.b")
+    private int[] b;
+    @JsonPath("$.c")
+    private C c;
+    @JsonPath("$.d")
+    private List<C> d;
+    @JsonPath(value = "$.e")
+    //日期类型请定义格式，否则会转换异常
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    private Date e;
+    @JsonPath("$.f")
+    private char f;
+}
+
+@Data
+public class C {
+    @JsonPath("$.e")
+    private int e;
+    @JsonPath("$.d")
+    private int d;
+}
+``` 
+反序列化
+```java
+    String json = "{a:1,b:[1,2,2],c:{d:3,e:4},d:[{d:2,e:1},{d:21,e:12}],e:'2019-10-10 01:02:03',f:'j'}";
+    Object obj = JSON.parse(json);
+    //反序列化json字符串
+    A a = JsonPathMapper.parse(json, A.class);
+    //反序列对象 
+    A a1 = JsonPathMapper.parse(obj, A.class);  
+```
+
 ### 5.注解说明
 ```java
     //value 表示字段的xpath，嵌套类的字段需使用相对路径./开头，非嵌套类的字段需使用完整路径/开头

@@ -1,5 +1,6 @@
 package com.iceolive.xpathmapper;
 
+import com.alibaba.fastjson.JSON;
 import com.iceolive.util.StringUtil;
 import com.iceolive.xpathmapper.annotation.XPath;
 import com.iceolive.xpathmapper.exception.UnsupportedXPathException;
@@ -17,8 +18,7 @@ import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -197,97 +197,98 @@ public class XPathMapper {
         for (Field field : fields) {
             element = root;
             XPath xPath = field.getAnnotation(XPath.class);
-            if (xPath != null) {
-                String[] nodes;
-                if (xPath.value().startsWith("./")) {
-                    nodes = xPath.value().substring(2).split("/");
-                } else if (xPath.value().startsWith("/")) {
-                    //如果是绝对路径，则清除element
-                    element = null;
-                    nodes = xPath.value().substring(1).split("/");
-                } else {
-                    throw new UnsupportedXPathException(xPath.value());
-                }
-                for (int i = 0; i < nodes.length; i++) {
-                    String node = nodes[i];
-                    if (i == nodes.length - 1) {
-                        Object val = ReflectUtil.getValue(value, field.getName(), clazz);
-                        Object[] values;
-                        if (val == null) {
+            if (xPath == null) {
+                continue;
+            }
+            String[] nodes;
+            if (xPath.value().startsWith("./")) {
+                nodes = xPath.value().substring(2).split("/");
+            } else if (xPath.value().startsWith("/")) {
+                //如果是绝对路径，则清除element
+                element = null;
+                nodes = xPath.value().substring(1).split("/");
+            } else {
+                throw new UnsupportedXPathException(xPath.value());
+            }
+            for (int i = 0; i < nodes.length; i++) {
+                String node = nodes[i];
+                if (i == nodes.length - 1) {
+                    Object val = ReflectUtil.getValue(value, field.getName(), clazz);
+                    Object[] values;
+                    if (val == null) {
 
-                        } else if (val instanceof Set) {
-                            if (((Set) val).isEmpty()) {
-                                return;
-                            }
-                            values = ((Set) val).toArray();
-                            setValue(document, element, values, node, xPath);
-                        } else if (val instanceof List) {
-                            if (((List) val).isEmpty()) {
-                                return;
-                            }
-                            values = ((List) val).toArray();
-                            setValue(document, element, values, node, xPath);
-                        } else if (val.getClass().isArray()) {
-                            int length = Array.getLength(val);
-                            if (length == 0) {
-                                return;
-                            }
-                            values = new Object[length];
-                            for (int j = 0; j < length; j++) {
-                                values[j] = Array.get(val, j);
-                            }
-                            setValue(document, element, values, node, xPath);
-                        } else {
-                            String str = val.toString();
-                            str = getString(xPath, val, str);
-                            if (node.startsWith("@")) {
-                                element.addAttribute(node.substring(1), str);
-                            } else if (node.equals("text()")) {
-                                if (xPath.CDATA()) {
-                                    element.addCDATA(str);
-                                } else {
-                                    element.setText(str);
-                                }
-                            } else {
-                                //处理对象
-                                element = element.addElement(node);
-                                setValue(document, element, val);
-                            }
+                    } else if (val instanceof Set) {
+                        if (((Set) val).isEmpty()) {
+                            return;
                         }
+                        values = ((Set) val).toArray();
+                        setValue(document, element, values, node, xPath);
+                    } else if (val instanceof List) {
+                        if (((List) val).isEmpty()) {
+                            return;
+                        }
+                        values = ((List) val).toArray();
+                        setValue(document, element, values, node, xPath);
+                    } else if (val.getClass().isArray()) {
+                        int length = Array.getLength(val);
+                        if (length == 0) {
+                            return;
+                        }
+                        values = new Object[length];
+                        for (int j = 0; j < length; j++) {
+                            values[j] = Array.get(val, j);
+                        }
+                        setValue(document, element, values, node, xPath);
                     } else {
-                        Matcher m = r.matcher(node);
-                        int num = 0;
-                        if (m.find()) {
-                            node = m.group(1);
-                            num = Integer.parseInt(m.group(2)) - 1;
-                            if (num < 0) {
-                                throw new UnsupportedXPathException(xPath.value());
-                            }
-                        }
-                        if (element == null) {
-                            if (document.getRootElement() == null) {
-                                element = document.addElement(node);
+                        String str = val.toString();
+                        str = getString(xPath, val, str);
+                        if (node.startsWith("@")) {
+                            element.addAttribute(node.substring(1), str);
+                        } else if (node.equals("text()")) {
+                            if (xPath.CDATA()) {
+                                element.addCDATA(str);
                             } else {
-                                element = document.getRootElement();
-                            }
-                        } else if (num == 0) {
-                            if (element.element(node) == null) {
-                                element = element.addElement(node);
-                            } else {
-                                element = element.element(node);
+                                element.setText(str);
                             }
                         } else {
-                            List<Element> children = element.elements(node);
-                            if (num >= children.size()) {
-                                for (int j = 0; j <= num - children.size(); j++) {
-                                    element.addElement(node);
-                                }
-                            }
-                            element = element.elements(node).get(num);
+                            //处理对象
+                            element = element.addElement(node);
+                            setValue(document, element, val);
                         }
                     }
+                } else {
+                    Matcher m = r.matcher(node);
+                    int num = 0;
+                    if (m.find()) {
+                        node = m.group(1);
+                        num = Integer.parseInt(m.group(2)) - 1;
+                        if (num < 0) {
+                            throw new UnsupportedXPathException(xPath.value());
+                        }
+                    }
+                    if (element == null) {
+                        if (document.getRootElement() == null) {
+                            element = document.addElement(node);
+                        } else {
+                            element = document.getRootElement();
+                        }
+                    } else if (num == 0) {
+                        if (element.element(node) == null) {
+                            element = element.addElement(node);
+                        } else {
+                            element = element.element(node);
+                        }
+                    } else {
+                        List<Element> children = element.elements(node);
+                        int childrenLength = children.size();
+                        if (num >= childrenLength) {
+                            for (int j = 0; j <= num - childrenLength; j++) {
+                                element.addElement(node);
+                            }
+                        }
+                        element = element.elements(node).get(num);
+                    }
                 }
-
             }
         }
     }

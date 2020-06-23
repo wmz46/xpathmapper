@@ -35,4 +35,10 @@ public @interface XPath {
     String trueString() default "true";
 
     String falseString() default "false";
+
+    /**
+     * 正则，反序列化时取第一个group
+     * @return
+     */
+    String regex() default "";
 }

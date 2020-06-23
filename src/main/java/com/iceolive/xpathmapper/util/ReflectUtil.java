@@ -195,6 +195,8 @@ public class ReflectUtil {
             return  true;
         }else if(isDateType(clazz)){
             return  true;
+        }else if(clazz.isAssignableFrom(String.class)){
+            return  true;
         }
         return false;
     }

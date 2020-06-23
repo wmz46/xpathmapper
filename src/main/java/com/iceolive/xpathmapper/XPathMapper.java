@@ -126,7 +126,10 @@ public class XPathMapper {
         if (!StringUtil.isEmpty(str)) {
             if (type.isAssignableFrom(boolean.class) || type.isAssignableFrom(Boolean.class)) {
                 val = StringUtil.parseBoolean(str, xPath.trueString(), xPath.falseString(), type);
-            } else {
+            } else if(StringUtil.isNotEmpty(xPath.regex())) {
+                str = StringUtil.matchOne(str,xPath.regex(),1);
+                val = StringUtil.parse(str,xPath.format(),type);
+            }else{
                 val = StringUtil.parse(str, xPath.format(), type);
             }
         }

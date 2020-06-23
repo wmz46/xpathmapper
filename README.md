@@ -6,7 +6,7 @@
 <dependency>
   <groupId>com.iceolive</groupId>
   <artifactId>xpathmapper</artifactId>
-  <version>1.2.0</version>
+  <version>1.2.1</version>
 </dependency>
 ```
 ## 二、快速开始

@@ -134,14 +134,26 @@ public class XPathMapper {
     }
 
 
+    private static void removeComments(org.jsoup.nodes.Node node){
+         for(int i =0;i<node.childNodeSize();){
+             org.jsoup.nodes.Node child = node.childNode(i);
+             if(child.nodeName().equals("#comment")) {
+                 child.remove();
+             }else{
+                 removeComments(child);
+                 i++;
+             }
+
+         }
+    }
     public static <T> T parseHtml(String html, Class<T> clazz) {
-        //去掉注释
-        html = html.replaceAll("\\<!--(.+)--\\>", "");
         org.jsoup.nodes.Document document = Jsoup.parse(html);
         //处理未闭合标签
         document.outputSettings(new org.jsoup.nodes.Document.OutputSettings().syntax(org.jsoup.nodes.Document.OutputSettings.Syntax.xml));
         //去掉script，避免&字符
         document.getElementsByTag("script").remove();
+        //去掉注释
+        removeComments(document);
         //只取html
         html = document.getElementsByTag("html").first().outerHtml();
         //处理html空格，理论上有其他和xml不兼容的也要加

@@ -43,7 +43,7 @@ public class XPathMapper {
                 xPathStr = prefix + xPathStr.substring(1);
             }
             //移除最后一个非节点
-            if (xPathStr.endsWith("text()") || xPathStr.contains("@")) {
+            if (xPathStr.endsWith("text()") ||xPathStr.endsWith("xml()") || xPathStr.contains("@") || xPathStr.endsWith("string()")) {
                 xPathStr = xPathStr.substring(0, xPathStr.lastIndexOf("/"));
             }
             List<Node> nodes = document.selectNodes(xPathStr);
@@ -72,7 +72,12 @@ public class XPathMapper {
             }
             for (int i = 0; i < nodes.size(); i++) {
                 String str = null;
-                if (xPath.value().endsWith("text()")) {
+                if(xPath.value().endsWith("string()")){
+                    str = nodes.get(i).getStringValue();
+                }else if(xPath.value().endsWith("xml()")){
+                    str = nodes.get(i).asXML();
+                }
+                else if (xPath.value().endsWith("text()")) {
                     str = nodes.get(i).getText();
                 } else if (xPath.value().contains("@")) {
                     Attribute attribute = ((Element) nodes.get(i)).attribute(xPath.value().substring(xPath.value().lastIndexOf("@") + 1));

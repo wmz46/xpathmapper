@@ -11,6 +11,7 @@ import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Entities;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -157,7 +158,7 @@ public class XPathMapper {
     public static <T> T parseHtml(String html, Class<T> clazz) {
         org.jsoup.nodes.Document document = Jsoup.parse(html);
         //处理未闭合标签
-        document.outputSettings(new org.jsoup.nodes.Document.OutputSettings().syntax(org.jsoup.nodes.Document.OutputSettings.Syntax.xml));
+        document.outputSettings(new org.jsoup.nodes.Document.OutputSettings().escapeMode(Entities.EscapeMode.xhtml).syntax(org.jsoup.nodes.Document.OutputSettings.Syntax.xml));
         //去掉script，避免&字符
         document.getElementsByTag("script").remove();
         //去掉注释

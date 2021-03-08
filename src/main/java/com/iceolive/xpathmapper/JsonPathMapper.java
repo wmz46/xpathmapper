@@ -33,7 +33,11 @@ public class JsonPathMapper {
 
     private static <T> T parse(Object obj, Class<T> clazz, String format) {
         if (ReflectUtil.isBasicType(clazz)) {
-            return (T) StringUtil.parse(obj.toString(), format, clazz);
+            if (obj != null) {
+                return (T) StringUtil.parse(obj.toString(), format, clazz);
+            } else {
+                return null;
+            }
         }
         List<Field> fields = ReflectUtil.getAllFields(clazz);
         T newObj = ReflectUtil.newInstance(clazz);
@@ -43,8 +47,8 @@ public class JsonPathMapper {
                 continue;
             }
             JSONField jsonField = field.getAnnotation(JSONField.class);
-            String dateFormat ="";
-            if(jsonField !=null && !StringUtil.isEmpty(jsonField.format())){
+            String dateFormat = "";
+            if (jsonField != null && !StringUtil.isEmpty(jsonField.format())) {
                 dateFormat = jsonField.format();
             }
             boolean isList = false;
@@ -113,9 +117,9 @@ public class JsonPathMapper {
                     ReflectUtil.setValue(newObj, field.getName(), values);
 
                 } else if (List.class.isAssignableFrom(currentObj.getClass())) {
-                    Object values = ReflectUtil.newInstance(field, ((List)currentObj).size());
-                    for (int i = 0; i < ((List)currentObj).size(); i++) {
-                        Object item = parse(((List)currentObj).get(i), type, dateFormat);
+                    Object values = ReflectUtil.newInstance(field, ((List) currentObj).size());
+                    for (int i = 0; i < ((List) currentObj).size(); i++) {
+                        Object item = parse(((List) currentObj).get(i), type, dateFormat);
                         ((List) values).add(item);
                     }
                     ReflectUtil.setValue(newObj, field.getName(), values);
@@ -143,8 +147,8 @@ public class JsonPathMapper {
                     ReflectUtil.setValue(newObj, field.getName(), values);
 
                 } else if (Set.class.isAssignableFrom(currentObj.getClass())) {
-                    Object values = ReflectUtil.newInstance(field,((Set)currentObj).size());
-                    for (Object c : (Set)currentObj) {
+                    Object values = ReflectUtil.newInstance(field, ((Set) currentObj).size());
+                    for (Object c : (Set) currentObj) {
                         Object item = parse(c, type, dateFormat);
                         ((Set) values).add(item);
                     }
@@ -164,5 +168,5 @@ public class JsonPathMapper {
         }
         return newObj;
     }
- 
+
 }

@@ -1,4 +1,8 @@
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.iceolive.xpathmapper.JsonPathMapper;
 import com.iceolive.xpathmapper.XPathMapper;
+import com.iceolive.xpathmapper.annotation.JsonPath;
 import com.iceolive.xpathmapper.annotation.XPath;
 import lombok.Data;
 import org.junit.Assert;
@@ -67,5 +71,47 @@ public class Tests {
         String newXml = XPathMapper.format(student, true);
         Student student1 = XPathMapper.parse(newXml, Student.class);
         Assert.assertEquals("经过反序列化->序列化->反序列化后两个对象不相等", student, student1);
+    }
+
+    @Data
+    public static class A {
+        @JsonPath("$.a")
+        private Byte a;
+        @JsonPath("$.b")
+        private int[] b;
+        @JsonPath("$.c")
+        private C c;
+        @JsonPath("$.d")
+        private List<C> d;
+        @JsonPath(value = "$.e")
+        //日期类型请定义格式，否则会转换异常
+        @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+        private Date e;
+        @JsonPath("$.f")
+        private char f;
+        //当json单个对象嵌套层过多时，这个反序列化工具可将其扁平化处理
+        @JsonPath("$.c.e")
+        private int c_e;
+        @JsonPath("$.c.d")
+        private int c_d;
+    }
+
+    @Data
+    public static class C {
+        @JsonPath("$.e")
+        private int e;
+        @JsonPath("$.d")
+        private int d;
+    }
+
+    @Test
+    public void test2() {
+        String json = "{a:1,b:[1,2,2],c:{d:3,e:4},d:[{d:2,e:1},{d:21,e:12}],e:'2019-10-10 01:02:03',f:'j'}";
+        //反序列化json字符串
+        A a = JsonPathMapper.parse(json, A.class);
+        //反序列对象
+        Object obj = JSON.parse(json);
+        A a1 = JsonPathMapper.parse(obj, A.class);
+        Assert.assertEquals("反序列对象和反序列json字符串的两个对象不相等",a,a1);
     }
 }

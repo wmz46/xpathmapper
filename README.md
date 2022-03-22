@@ -80,7 +80,7 @@ HTML反序列化
 //为避免&符号问题，组件会去除html中的script标签和注释
 Student student = XPathMapper.parseHtml(html,Student.class);
 ```
-JSON反序列化
+### 5.JSON反序列化
 
 基于fastjson的JSONPath，语法请参考[JSONPath介绍](https://github.com/alibaba/fastjson/wiki/JSONPath)
 
@@ -104,6 +104,11 @@ public class A {
     private Date e;
     @JsonPath("$.f")
     private char f;
+    //当json单个对象嵌套层过多时，这个反序列化工具可将其扁平化处理
+    @JsonPath("$.c.e")
+    private int c_e;
+    @JsonPath("$.c.d")
+    private int c_d;
 }
 
 @Data
@@ -124,7 +129,7 @@ public class C {
     A a1 = JsonPathMapper.parse(obj, A.class);  
 ```
 
-### 5.注解说明
+### 6.注解说明
 ```java
     //value 表示字段的xpath，嵌套类的字段需使用相对路径./开头，非嵌套类的字段需使用完整路径/开头
     //当字段不是自定义对象也不是自定义对象的数组或列表，结尾必须是“text()”或“@属性名”，指明是取节点内容或属性值。

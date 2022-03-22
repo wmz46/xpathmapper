@@ -328,6 +328,9 @@ public class XPathMapper {
                 }
             }
             Object val = values[j];
+            if(val == null){
+                continue;
+            }
             String str = values[j].toString();
             str = getString(xPath, val, str);
             if (node.startsWith("@")) {

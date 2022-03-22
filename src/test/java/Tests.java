@@ -40,8 +40,9 @@ public class Tests {
         @XPath("./text()")
         private int score;
     }
+
     @Test
-    public void test1(){
+    public void test1() {
         String xml = "<input>\n" +
                 "    <body>\n" +
                 "        <student age=\"20\" boarding=\"否\">\n" +
@@ -62,9 +63,9 @@ public class Tests {
                 "        </tags>\n" +
                 "    </body>\n" +
                 "</input>";
-        Student student = XPathMapper.parse(xml,Student.class);
+        Student student = XPathMapper.parse(xml, Student.class);
         String newXml = XPathMapper.format(student, true);
-        Student student1 = XPathMapper.parse(newXml,Student.class);
-        Assert.assertEquals("经过反序列化->序列化->反序列化后两次对象相等",student,student1);
+        Student student1 = XPathMapper.parse(newXml, Student.class);
+        Assert.assertEquals("经过反序列化->序列化->反序列化后两个对象不相等", student, student1);
     }
 }

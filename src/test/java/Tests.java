@@ -1,15 +1,19 @@
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.annotation.JSONField;
+ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.iceolive.xpathmapper.JsonPathMapper;
 import com.iceolive.xpathmapper.XPathMapper;
 import com.iceolive.xpathmapper.annotation.JsonPath;
 import com.iceolive.xpathmapper.annotation.XPath;
-import lombok.Data;
-import org.junit.Assert;
+import com.iceolive.xpathmapper.util.JsonUtil;
+ import com.jayway.jsonpath.Configuration;
+ import lombok.Data;
+ import net.minidev.json.JSONArray;
+ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Tests {
 
@@ -85,7 +89,7 @@ public class Tests {
         private List<C> d;
         @JsonPath(value = "$.e")
         //日期类型请定义格式，否则会转换异常
-        @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private Date e;
         @JsonPath("$.f")
         private char f;
@@ -106,12 +110,13 @@ public class Tests {
 
     @Test
     public void test2() {
-        String json = "{a:1,b:[1,2,2],c:{d:3,e:4},d:[{d:2,e:1},{d:21,e:12}],e:'2019-10-10 01:02:03',f:'j'}";
+        String json = "{\"a\":1,\"b\":[1,2,2],\"c\":{\"d\":3,\"e\":4},\"d\":[{\"d\":2,\"e\":1},{\"d\":21,\"e\":12}],\"e\":\"2019-10-10 01:02:03\",\"f\":\"j\"}";
         //反序列化json字符串
         A a = JsonPathMapper.parse(json, A.class);
         //反序列对象
-        Object obj = JSON.parse(json);
+        Object obj = JsonUtil.parse(json);
         A a1 = JsonPathMapper.parse(obj, A.class);
         Assert.assertEquals("反序列对象和反序列json字符串的两个对象不相等",a,a1);
     }
+
 }

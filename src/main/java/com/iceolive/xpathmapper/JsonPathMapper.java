@@ -1,21 +1,15 @@
 package com.iceolive.xpathmapper;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONPath;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.iceolive.util.StringUtil;
 import com.iceolive.xpathmapper.annotation.JsonPath;
+import com.iceolive.xpathmapper.util.JsonUtil;
 import com.iceolive.xpathmapper.util.ReflectUtil;
-import lombok.Data;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -24,7 +18,7 @@ import java.util.Set;
  **/
 public class JsonPathMapper {
     public static <T> T parse(String json, Class<T> clazz) {
-        return parse(JSON.parse(json), clazz, null);
+        return parse(JsonUtil.parse(json), clazz, null);
     }
 
     public static <T> T parse(Object obj, Class<T> clazz) {
@@ -34,7 +28,7 @@ public class JsonPathMapper {
     private static <T> T parse(Object obj, Class<T> clazz, String format) {
         if (ReflectUtil.isBasicType(clazz)) {
             if (obj != null) {
-                return (T) StringUtil.parse(obj.toString(), format, clazz);
+                return (T) StringUtil.parse(String.valueOf(obj), format, clazz);
             } else {
                 return null;
             }
@@ -46,10 +40,10 @@ public class JsonPathMapper {
             if (jsonPath == null || StringUtil.isEmpty(jsonPath.value())) {
                 continue;
             }
-            JSONField jsonField = field.getAnnotation(JSONField.class);
+            JsonFormat jsonField = field.getAnnotation(JsonFormat.class);
             String dateFormat = "";
-            if (jsonField != null && !StringUtil.isEmpty(jsonField.format())) {
-                dateFormat = jsonField.format();
+            if (jsonField != null && !StringUtil.isEmpty(jsonField.pattern())) {
+                dateFormat = jsonField.pattern();
             }
             boolean isList = false;
             boolean isArray = false;
@@ -71,17 +65,11 @@ public class JsonPathMapper {
                 type = field.getType();
             }
             if (isArray) {
-                Object currentObj = JSONPath.eval(obj, jsonPath.value());
-                if (currentObj instanceof JSONObject) {
-                    Object values = ReflectUtil.newInstance(field, 1);
-                    Object item = parse(currentObj, type, dateFormat);
-                    Array.set(values, 0, item);
-                    ReflectUtil.setValue(newObj, field.getName(), values);
-
-                } else if (currentObj instanceof JSONArray) {
-                    Object values = ReflectUtil.newInstance(field, ((JSONArray) currentObj).size());
-                    for (int i = 0; i < ((JSONArray) currentObj).size(); i++) {
-                        Object item = parse(((JSONArray) currentObj).get(i), type, dateFormat);
+                Object currentObj = JsonUtil.eval(obj, jsonPath.value());
+                if (currentObj instanceof ArrayList) {
+                    Object values = ReflectUtil.newInstance(field, ((ArrayList) currentObj).size());
+                    for (int i = 0; i < ((ArrayList) currentObj).size(); i++) {
+                        Object item = parse(((ArrayList) currentObj).get(i), type, dateFormat);
                         Array.set(values, i, item);
                     }
                     ReflectUtil.setValue(newObj, field.getName(), values);
@@ -101,17 +89,11 @@ public class JsonPathMapper {
                     ReflectUtil.setValue(newObj, field.getName(), values);
                 }
             } else if (isList) {
-                Object currentObj = JSONPath.eval(obj, jsonPath.value());
-                if (currentObj instanceof JSONObject) {
-                    Object values = ReflectUtil.newInstance(field, 1);
-                    Object item = parse(currentObj, type, dateFormat);
-                    ((List) values).add(item);
-                    ReflectUtil.setValue(newObj, field.getName(), values);
-
-                } else if (currentObj instanceof JSONArray) {
-                    Object values = ReflectUtil.newInstance(field, ((JSONArray) currentObj).size());
-                    for (int i = 0; i < ((JSONArray) currentObj).size(); i++) {
-                        Object item = parse(((JSONArray) currentObj).get(i), type, dateFormat);
+                Object currentObj = JsonUtil.eval(obj, jsonPath.value());
+                if (currentObj instanceof ArrayList) {
+                    Object values = ReflectUtil.newInstance(field, ((ArrayList) currentObj).size());
+                    for (int i = 0; i < ((ArrayList) currentObj).size(); i++) {
+                        Object item = parse(((ArrayList) currentObj).get(i), type, dateFormat);
                         ((List) values).add(item);
                     }
                     ReflectUtil.setValue(newObj, field.getName(), values);
@@ -131,17 +113,11 @@ public class JsonPathMapper {
                     ReflectUtil.setValue(newObj, field.getName(), values);
                 }
             } else if (isSet) {
-                Object currentObj = JSONPath.eval(obj, jsonPath.value());
-                if (currentObj instanceof JSONObject) {
-                    Object values = ReflectUtil.newInstance(field, 1);
-                    Object item = parse(currentObj, type, dateFormat);
-                    ((Set) values).add(item);
-                    ReflectUtil.setValue(newObj, field.getName(), values);
-
-                } else if (currentObj instanceof JSONArray) {
-                    Object values = ReflectUtil.newInstance(field, ((JSONArray) currentObj).size());
-                    for (int i = 0; i < ((JSONArray) currentObj).size(); i++) {
-                        Object item = parse(((JSONArray) currentObj).get(i), type, dateFormat);
+                Object currentObj = JsonUtil.eval(obj, jsonPath.value());
+                if (currentObj instanceof ArrayList) {
+                    Object values = ReflectUtil.newInstance(field, ((ArrayList) currentObj).size());
+                    for (int i = 0; i < ((ArrayList) currentObj).size(); i++) {
+                        Object item = parse(((ArrayList) currentObj).get(i), type, dateFormat);
                         ((Set) values).add(item);
                     }
                     ReflectUtil.setValue(newObj, field.getName(), values);
@@ -161,7 +137,7 @@ public class JsonPathMapper {
                     ReflectUtil.setValue(newObj, field.getName(), values);
                 }
             } else {
-                Object currentObj = JSONPath.eval(obj, jsonPath.value());
+                Object currentObj = JsonUtil.eval(obj, jsonPath.value());
                 Object item = parse(currentObj, type, dateFormat);
                 ReflectUtil.setValue(newObj, field.getName(), item);
             }

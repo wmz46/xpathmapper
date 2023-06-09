@@ -175,7 +175,7 @@ public class XPathMapper {
     public static <T> T parse(String xml, Class<T> clazz) {
         try {
             //去掉xmlns
-            xml = xml.replaceAll("xmlns=\"(.+)\"", "");
+            xml = xml.replaceAll("xmlns=\"([^\"]+)\"", "");
             Document document = DocumentHelper.parseText(xml);
 
             T obj = ReflectUtil.newInstance(clazz);

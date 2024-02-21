@@ -28,7 +28,11 @@ public class JsonPathMapper {
     private static <T> T parse(Object obj, Class<T> clazz, String format) {
         if (ReflectUtil.isBasicType(clazz)) {
             if (obj != null) {
-                return (T) StringUtil.parse(String.valueOf(obj), format, clazz);
+                if(clazz == Boolean.class || clazz == boolean.class){
+                    return (T)StringUtil.parseBoolean(String.valueOf(obj),clazz);
+                }else {
+                    return (T) StringUtil.parse(String.valueOf(obj), format, clazz);
+                }
             } else {
                 return null;
             }

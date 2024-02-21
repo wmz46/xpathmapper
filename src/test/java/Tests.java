@@ -98,6 +98,8 @@ public class Tests {
         private int c_e;
         @JsonPath("$.c.d")
         private int c_d;
+        @JsonPath("$.g")
+        private boolean g;
     }
 
     @Data
@@ -110,7 +112,7 @@ public class Tests {
 
     @Test
     public void test2() {
-        String json = "{\"a\":1,\"b\":[1,2,2],\"c\":{\"d\":3,\"e\":4},\"d\":[{\"d\":2,\"e\":1},{\"d\":21,\"e\":12}],\"e\":\"2019-10-10 01:02:03\",\"f\":\"j\"}";
+        String json = "{\"g\":true,\"a\":1,\"b\":[1,2,2],\"c\":{\"d\":3,\"e\":4},\"d\":[{\"d\":2,\"e\":1},{\"d\":21,\"e\":12}],\"e\":\"2019-10-10 01:02:03\",\"f\":\"j\"}";
         //反序列化json字符串
         A a = JsonPathMapper.parse(json, A.class);
         //反序列对象

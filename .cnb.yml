@@ -1,0 +1,41 @@
+$:
+  push:
+    - imports: https://cnb.cool/iceolive/private-config/-/blob/main/github.yml
+      stages:
+        - git push --progress https://${GITHUB_TOKEN}@github.com/wmz46/${CNB_REPO_NAME_LOWERCASE} HEAD:${CNB_BRANCH}
+        - git push --tags https://${GITHUB_TOKEN}@github.com/wmz46/${CNB_REPO_NAME_LOWERCASE}
+  tag_push:
+    - docker:
+        image: maven:3.8.6-openjdk-8
+        volumes:
+          - /root/.m2:copy-on-write
+      imports:
+        - https://cnb.cool/iceolive/private-config/-/blob/main/smtp.yml
+        - https://cnb.cool/iceolive/private-config/-/blob/main/ossrh.yml
+      stages:
+        - gpg --version
+        - echo ${OSSRH_PRV} >> private.key
+        - gpg --passphrase ${OSSRH_PASSPHRASE} --pinentry-mode loopback --import private.key
+        - gpg --list-secret-keys --keyid-format=long
+        - mvn clean deploy -s ./settings.xml  -Dgpg.passphrase=${OSSRH_PASSPHRASE} -Dgpg.keyname=${OSSRH_SEC_KEY}
+        - name: notify
+          image: drillster/drone-email
+          settings:
+            host: $smtp_host
+            username: $smtp_username
+            password: $smtp_password
+            from: $smtp_from
+            recipients: $smtp_recipients
+            subject: 成功发布${CNB_REPO_NAME_LOWERCASE}@${CNB_BRANCH}
+            body: 成功发布${CNB_REPO_NAME_LOWERCASE}@${CNB_BRANCH}
+      failStages:
+        - name: notify
+          image: drillster/drone-email
+          settings:
+            host: $smtp_host
+            username: $smtp_username
+            password: $smtp_password
+            from: $smtp_from
+            recipients: $smtp_recipients
+            subject: 发布${CNB_REPO_NAME_LOWERCASE}@${CNB_BRANCH}失败
+            body: 发布${CNB_REPO_NAME_LOWERCASE}@${CNB_BRANCH}失败 <br> ${CNB_BUILD_FAILED_STAGE_NAME} <br> ${CNB_BUILD_FAILED_MSG} <br> ${CNB_BUILD_WEB_URL}

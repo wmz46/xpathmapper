@@ -7,7 +7,7 @@
     <url>https://github.com/wmz46/xpathmapper</url>
     <groupId>com.iceolive</groupId>
     <artifactId>xpathmapper</artifactId>
-    <version>1.2.9</version>
+    <version>1.2.10</version>
     <description>xpathmapper is a XML processor (XML parser + XML generator) written in Java</description>
     <licenses>
         <license>
@@ -131,13 +131,10 @@
             <artifactId>jsoup</artifactId>
             <version>1.15.3</version>
         </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path -->
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>2.9.0</version>
+            <version>2.10.0</version>
         </dependency>
 
         <dependency>
@@ -147,13 +144,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>net.minidev</groupId>
-                <artifactId>json-smart</artifactId>
-                <version>2.5.2</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 </project>
